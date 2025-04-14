@@ -6,4 +6,5 @@ const { verifyToken, isAdmin } = require('../middlewares/authMiddleware')
 // Эндпоинт для создания завуча (только для админа)
 router.post('/create-zavuch', verifyToken, isAdmin, userController.createZavuch)
 router.delete('/delete-zavuch/:id',verifyToken,isAdmin, userController.deleteZavuch)
+router.get('/zavuchey', verifyToken, isAdmin, userController.getZavuchey)
 module.exports = router

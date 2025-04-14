@@ -45,3 +45,14 @@ exports.deleteZavuch = async (req, res) => {
 		res.status(500).json({ message: 'Ошибка при удалении завуча' })
 	}
 };
+exports.getZavuchey = async (req, res) => {
+	try {
+		const result = await pool.query(
+			"SELECT id, username FROM users WHERE role = 'ZAVUCH'"
+		)
+		res.json({ zavuchey: result.rows })
+	} catch (error) {
+		console.error('Ошибка при получении завучей:', error)
+		res.status(500).json({ message: 'Ошибка при получении завучей' })
+	}
+}
