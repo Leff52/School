@@ -2,7 +2,6 @@ const pool = require('../../config/db.config')
 const bcrypt = require('bcrypt')
 
 exports.createZavuch = async (req, res) => {
-	// Ожидаем в теле запроса: username и password
 	const { username, password } = req.body
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10)

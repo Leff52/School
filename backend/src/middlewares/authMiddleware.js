@@ -28,6 +28,20 @@ exports.isAdmin = (req, res, next) => {
 	}
 	next()
 }
+exports.isZavuch = (req, res, next) => {
+	if (req.user.role !== 'ZAVUCH') {
+		return res
+			.status(403)
+			.json({ message: 'Доступ запрещён: нужен роль ZAVUCH' })
+	}
+	next()
+}
+exports.isZavuchOrAdmin = (req, res, next) => {
+	if (!['ZAVUCH', 'ADMIN'].includes(req.user.role)) {
+		return res.status(403).json({ message: 'Доступ запрещён' })
+	}
+	next()
+}
 exports.isUser = (req, res, next) => {
     if (req.user.role !== 'USER') {
         return res
