@@ -3,8 +3,8 @@ const router = express.Router()
 const userController = require('../controllers/userController')
 const { verifyToken, isAdmin } = require('../middlewares/authMiddleware')
 
-// Эндпоинт для создания завуча (только для админа)
 router.post('/create-zavuch', verifyToken, isAdmin, userController.createZavuch)
 router.delete('/delete-zavuch/:id',verifyToken,isAdmin, userController.deleteZavuch)
 router.get('/zavuchey', verifyToken, isAdmin, userController.getZavuchey)
+router.put('/profile', verifyToken, userController.updateProfile)
 module.exports = router

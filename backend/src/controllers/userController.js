@@ -21,7 +21,6 @@ exports.createZavuch = async (req, res) => {
 	
 };
 exports.deleteZavuch = async (req, res) => {
-	// Получаем id завуча из параметров URL
 	const { id } = req.params
 	try {
 		// Выполняем удаление только если у пользователя роль ZAVUCH
@@ -54,5 +53,41 @@ exports.getZavuchey = async (req, res) => {
 	} catch (error) {
 		console.error('Ошибка при получении завучей:', error)
 		res.status(500).json({ message: 'Ошибка при получении завучей' })
+	}
+}
+// Обновление профиля пользователя
+exports.updateProfile = async (req, res) => {
+	const userId = req.user.id
+	const { username, password, full_name } = req.body
+	try {
+		const fields = []
+		const values = []
+		let idx = 1
+
+		if (username) {
+			fields.push(`username = $${idx++}`)
+			values.push(username)
+		}
+		if (full_name) {
+			fields.push(`full_name = $${idx++}`)
+			values.push(full_name)
+		}
+		if (password) {
+			const hashed = await bcrypt.hash(password, 10)
+			fields.push(`password = $${idx++}`)
+			values.push(hashed)
+		}
+		if (fields.length === 0) {
+			return res.status(400).json({ message: 'Нет полей для обновления' })
+		}
+		values.push(userId)
+		const query = `UPDATE users SET ${fields.join(
+			', '
+		)} WHERE id = $${idx} RETURNING id, username, full_name, role`
+		const result = await pool.query(query, values)
+		res.json({ user: result.rows[0] })
+	} catch (err) {
+		console.error(err)
+		res.status(500).json({ message: 'Ошибка обновления профиля' })
 	}
 }

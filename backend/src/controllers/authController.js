@@ -13,8 +13,6 @@ exports.login = async (req, res) => {
 			return res.status(400).json({ message: 'Неверный логин или пароль' })
 		}
 		const user = result.rows[0]
-
-		// Проверка хеша пароля
 		const isValid = await bcrypt.compare(password, user.password)
 		if (!isValid) {
 			return res.status(400).json({ message: 'Неверный логин или пароль' })
