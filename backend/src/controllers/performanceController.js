@@ -3,13 +3,10 @@ const pool = require('../../config/db.config')
 exports.getAllPerformances = async (req, res) => {
 	try {
 		const result = await pool.query(`
-      SELECT p.id, p.student_id, s.full_name AS student_name,
-             p.subject_id, subj.name AS subject_name,
-             p.quarter, p.grade
-      FROM performance p
-      JOIN students s ON p.student_id = s.id
-      JOIN subjects subj ON p.subject_id = subj.id
-      ORDER BY p.id
+select  s.full_name  as "Ученики",s2.name as "Дисциплина", p.quarter as "Четверть" ,p.grade as "Оценки"  from performance p
+join students s on s.id = p.student_id 
+join subjects s2 on s2.id = p.subject_id 
+order by p.grade desc
     `)
 		res.json({ performances: result.rows })
 	} catch (err) {
