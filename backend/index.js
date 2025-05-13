@@ -13,12 +13,16 @@ const userRoutes = require('./src/routes/userRoutes')
 const teacherRoutes = require('./src/routes/teacherRoutes')
 const studentRoutes = require('./src/routes/studentRoutes')
 const performanceRoutes = require('./src/routes/performanceRoutes')
+const subjectRoutes = require('./src/routes/subjectRoutes')
+const analyticsRoutes = require('./src/routes/analyticsRoutes')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/teachers', teacherRoutes)
 app.use('/api/students', studentRoutes)
 app.use('/api/performances', performanceRoutes)
+app.use('/api/subjects', subjectRoutes)
+app.use('/api/analytics', analyticsRoutes)
 
 app.listen(port, () => {
 	console.log(`Сервер запущен на порту http://localhost:${port}`)

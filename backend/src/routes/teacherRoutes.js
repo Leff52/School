@@ -7,6 +7,7 @@ const {
 const tc = require('../controllers/teacherController')
 
 router.get('/', verifyToken, isZavuchOrAdmin, tc.getAllTeachers)
-
+router.post('/', verifyToken, isZavuchOrAdmin, tc.createTeacher)
+router.delete('/:id', verifyToken, isZavuchOrAdmin, tc.deleteTeacher)
 module.exports = router
 // router.get('/:id', verifyToken, isZavuchOrAdmin, tc.getTeacherById)
