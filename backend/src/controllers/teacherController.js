@@ -81,3 +81,52 @@ exports.deleteTeacher = async (req, res) => {
     res.status(500).json({ message: 'Не удалось удалить учителя' });
   }
 };
+exports.updateTeacherInfo = async (req, res) => {
+  const id = req.params.id;
+  const { full_name, classroom } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE teachers
+       SET full_name = $1,
+           classroom = $2
+       WHERE id = $3
+       RETURNING *`,
+      [full_name, classroom, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Учитель не найден' });
+    }
+
+    res.json({ teacher: result.rows[0] });
+  } catch (err) {
+    console.error('Ошибка при обновлении учителя:', err);
+    res.status(500).json({ message: 'Не удалось обновить учителя' });
+  }
+};
+exports.updateTeacherSubjects = async (req, res) => {
+	const id = req.params.id
+	const { subjectIds } = req.body 
+
+	if (!Array.isArray(subjectIds)) {
+		return res.status(400).json({ message: 'Ожидается массив subjectIds' })
+	}
+
+	try {
+
+		await pool.query(`DELETE FROM teacher_subject WHERE teacher_id = $1`, [id])
+
+		for (const subjId of subjectIds) {
+			await pool.query(
+				`INSERT INTO teacher_subject (teacher_id, subject_id) VALUES ($1, $2)`,
+				[id, subjId]
+			)
+		}
+
+		res.json({ message: 'Предметы обновлены' })
+	} catch (err) {
+		console.error('Ошибка при обновлении предметов учителя:', err)
+		res.status(500).json({ message: 'Не удалось обновить предметы' })
+	}
+}

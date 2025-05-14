@@ -43,3 +43,28 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({ message: 'Не удалось удалить ученика' });
   }
 };
+// обновление ученика
+exports.updateStudent = async (req, res) => {
+  const id = req.params.id;
+  const { full_name, class: studClass } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE students
+       SET full_name = $1,
+           class = $2
+       WHERE id = $3
+       RETURNING *`,
+      [full_name, studClass, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Ученик не найден' });
+    }
+
+    res.json({ student: result.rows[0] });
+  } catch (err) {
+    console.error('Ошибка при обновлении ученика:', err);
+    res.status(500).json({ message: 'Не удалось обновить ученика' });
+  }
+};
