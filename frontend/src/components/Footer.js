@@ -21,14 +21,14 @@ export default function Footer() {
 						</ul>
 					</div>
 					<div className='footer-section'>
-						<h3>Связаться с нами</h3>
+						<h3>Связаться со мной</h3>
 						<p>rabpochtaPOMOGITE@mail.ru</p>
 						<p>+7 (911) 937-50-17</p>
 					</div>
 				</div>
 
 				<div className='footer-bottom'>
-					<p>© 2025 Империя зауча. Все права защищены.</p>
+					<p>© 2025 Империя зауча. Все права защищены, наверное).</p>
 					<div className='social-links'>
 						<a
 							href='https://github.com/Leff52'

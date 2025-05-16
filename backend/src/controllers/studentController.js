@@ -1,14 +1,14 @@
 const pool = require('../../config/db.config')
 
 exports.getAllStudents = async (req, res) => {
-	try {
-		const result = await pool.query('SELECT * FROM students ORDER BY id')
-		res.json({ students: result.rows })
-	} catch (err) {
-		console.error(err)
-		res.status(500).json({ message: 'Ошибка получения списка учеников' })
-	}
+    try {
+        const result = await pool.query(`SELECT id, full_name, class FROM students`)
+        res.json({ students: result.rows })
+    } catch (err) {
+        res.status(500).json({ message: 'Ошибка получения учеников' })
+    }
 }
+
 // добавить ученика
 exports.createStudent = async (req, res) => {
   const { full_name, class: studClass } = req.body;
@@ -43,6 +43,7 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({ message: 'Не удалось удалить ученика' });
   }
 };
+
 // обновление ученика
 exports.updateStudent = async (req, res) => {
   const id = req.params.id;

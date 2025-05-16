@@ -4,138 +4,115 @@ import Link from 'next/link'
 import { useContext } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { AuthContext } from '../app/providers'
+import '../styles/header.css' 
+import jwt_decode from 'jwt-decode'
 
 export default function Header() {
-    const { auth, setAuth } = useContext(AuthContext)
+    const { auth } = useContext(AuthContext)
     const pathname = usePathname()
     const router = useRouter()
+    const getUserRole = () => {
+        try {
+            if (auth.token) {
+                const decoded = jwt_decode(auth.token)
+                return decoded.role
+            }
+        } catch (error) {
+            console.error("Ошибка при декодировании токена:", error)
+        }
+        return null
+    }
+    
+    const userRole = getUserRole()
+    
+    const getDashboardUrl = () => {
+        if (userRole === 'TEACHER') {
+            return '/teacher'
+        } else {
+            return '/cabinet'
+        }
+    }
+    const isInDashboard = () => {
+        return pathname === '/cabinet' || pathname === '/teacher'
+    }
 
     const handleLogout = () => {
-        localStorage.removeItem('token')
-        setAuth({ isAuthenticated: false, token: null })
+        auth.logout()
         router.push('/login')
     }
 
     return (
-        <header className='header'>
-            <div className='header-container'>
-                <nav className='header-nav'>
-                    <Link href='/' className='header-logo'>
-                        Империя Зауча
-                    </Link>
-                </nav>
-                <div className='auth-container'>
-                    {auth.isAuthenticated ? (
-                        // Если на странице кабинета, показываем кнопку "Выход"
-                        pathname === '/cabinet' ? (
-                            <button onClick={handleLogout} className='auth-link logout-link'>
-                                Выход
-                            </button>
-                        ) : (
-                            <Link href='/cabinet' className='auth-link cabinet-link'>
-                                Личный кабинет
-                            </Link>
-                        )
-                    ) : (
-                        <Link href='/login' className='auth-link login-link'>
-                            Вход
-                        </Link>
-                    )}
-                </div>
-            </div>
+			<header className='main-header'>
+				<div className='header-container'>
+					<nav className='header-nav'>
+						<Link href='/' className='header-logo'>
+							Школа, школа, учиться целый год
+						</Link>
+					</nav>
+					<div className='auth-container'>
+						{auth.isAuthenticated ? (
+							isInDashboard() ? (
+								<button onClick={handleLogout} className='logout-button'>
+									Выход
+								</button>
+							) : (
+								<Link href={getDashboardUrl()} className='dashboard-link'>
+									Личный кабинет
+								</Link>
+							)
+						) : (
+							<Link href='/login' className='login-link'>
+								Вход
+							</Link>
+						)}
+					</div>
+				</div>
 
-            <style jsx>{`
-                .header {
-                    background: #293133;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    padding: 15px 0;
-                    position: sticky;
-                    top: 0;
-                    z-index: 100;
-                }
+				<style jsx>{`
+					.logout-button {
+						background-color: #f44336;
+						color: white;
+						border: none;
+						border-radius: 4px;
+						padding: 8px 16px;
+						font-size: 14px;
+						cursor: pointer;
+						font-weight: 500;
+						transition: background-color 0.2s;
+					}
 
-                .header-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 0 20px;
-                }
+					.logout-button:hover {
+						background-color: #d32f2f;
+					}
 
-                .header-nav {
-                    display: flex;
-                    align-items: center;
-                    gap: 40px;
-                }
+					.dashboard-link {
+						color: white;
+						text-decoration: none;
+						padding: 8px 16px;
+						background-color: rgba(255, 255, 255, 0.2);
+						border-radius: 4px;
+						font-weight: 500;
+						transition: background-color 0.2s;
+					}
 
-                .header-logo {
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    color: #0070f3;
-                    text-decoration: none;
-                }
+					.dashboard-link:hover {
+						background-color: rgba(255, 255, 255, 0.3);
+					}
 
-                .nav-links {
-                    display: flex;
-                    gap: 20px;
-                }
+					.login-link {
+						color: white;
+						text-decoration: none;
+						padding: 8px 16px;
+						background-color: rgba(255, 255, 255, 0.2);
+						border-radius: 4px;
+						font-weight: 500;
+						transition: background-color 0.2s;
+					}
 
-                .nav-link {
-                    color: #333;
-                    text-decoration: none;
-                    font-weight: 500;
-                    transition: color 0.3s;
-                }
-
-                .nav-link:hover {
-                    color: #0070f3;
-                }
-
-                .auth-container {
-                    display: flex;
-                    align-items: center;
-                }
-
-                .auth-link {
-
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    text-decoration: none;
-                    font-weight: 400;
-                    transition: all 0.3s;
-                }
-                
-                .logout-link {
-                    background: #e5;
-                    color: white;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 14px;
-                }
-                
-                .logout-link:hover {
-                    background: #c62828;
-                }
-
-                .login-link {
-                    background: #0070f3;
-                    color: white;
-                }
-
-                .login-link:hover {
-                    background: #0051af;
-                }
-
-                .cabinet-link {
-                    background: #f0f0f0;
-                    color: #333;
-                }
-
-                .cabinet-link:hover {
-                    background: #e0e0e0;
-                }
-            `}</style>
-        </header>
-    )
+					.login-link:hover {
+						background-color: rgba(255, 255, 255, 0.3);
+					}
+				`}</style>
+			</header>
+		)
 }

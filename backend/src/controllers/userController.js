@@ -5,7 +5,6 @@ exports.createZavuch = async (req, res) => {
 	const { username, password } = req.body
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10)
-		// Вставляем пользователя с ролью ZAVUCH
 		const result = await pool.query(
 			'INSERT INTO users (username, password, role) VALUES ($1, $2, $3) RETURNING *',
 			[username, hashedPassword, 'ZAVUCH']
@@ -88,5 +87,60 @@ exports.updateProfile = async (req, res) => {
 	} catch (err) {
 		console.error(err)
 		res.status(500).json({ message: 'Ошибка обновления профиля' })
+	}
+}
+exports.updateCredentials = async (req, res) => {
+	const userId = req.user.id
+	const { currentPassword, newUsername, newPassword } = req.body
+
+	if (!currentPassword || (!newUsername && !newPassword)) {
+		return res.status(400).json({ message: 'Недостаточно данных' })
+	}
+
+	try {
+		const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [
+			userId,
+		])
+
+		const user = userRes.rows[0]
+		if (!user) {
+			return res.status(404).json({ message: 'Пользователь не найден' })
+		}
+		const isMatch = await bcrypt.compare(currentPassword, user.password)
+		if (!isMatch) {
+			return res.status(401).json({ message: 'Неверный текущий пароль' })
+		}
+
+		if (newUsername && newUsername !== user.username) {
+			const check = await pool.query(
+				'SELECT * FROM users WHERE username = $1',
+				[newUsername]
+			)
+			if (check.rows.length > 0) {
+				return res.status(409).json({ message: 'Такой логин уже занят' })
+			}
+		}
+
+		let hashed = user.password
+		if (newPassword) {
+			hashed = await bcrypt.hash(newPassword, 10)
+		}
+
+		const updated = await pool.query(
+			`UPDATE users
+		   SET username = $1,
+			   password = $2
+		 WHERE id = $3
+		 RETURNING id, username, role`,
+			[newUsername || user.username, hashed, userId]
+		)
+
+		res.json({
+			message: 'Данные успешно обновлены',
+			user: updated.rows[0],
+		})
+	} catch (err) {
+		console.error('Ошибка при обновлении логина/пароля:', err)
+		res.status(500).json({ message: 'Не удалось обновить данные' })
 	}
 }

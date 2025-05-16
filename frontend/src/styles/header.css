@@ -1,0 +1,130 @@
+.main-header {
+    background: #293133;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.header-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0070f3;
+    text-decoration: none;
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+}
+
+
+.simple-button,
+.simple-link {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+}
+
+.simple-button {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.simple-button:hover {
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+    transform: translateY(-2px);
+}
+
+.simple-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 8px rgba(255, 65, 108, 0.4);
+}
+
+.simple-link[href="/login"] {
+    background: linear-gradient(135deg, #0070f3, #00c6ff);
+    color: white;
+    border: none;
+}
+
+.simple-link[href="/login"]:hover {
+    box-shadow: 0 5px 15px rgba(0, 112, 243, 0.4);
+    transform: translateY(-2px);
+}
+
+.simple-link[href="/login"]:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 8px rgba(0, 112, 243, 0.4);
+}
+
+.simple-link[href="/cabinet"] {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.simple-link[href="/cabinet"]:hover {
+    background: linear-gradient(135deg, #e6e9f0, #b3c2d8);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    color: #0070f3;
+}
+
+.simple-link[href="/cabinet"]:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.simple-button:hover::after,
+.simple-link:hover::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%) scale(0);
+    animation: pulse 0.8s ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}

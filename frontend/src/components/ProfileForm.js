@@ -41,8 +41,6 @@ export default function ProfileForm() {
 
 			setMessage('Профиль успешно обновлён')
 			setStatus('success')
-
-			// Обновим токен, если поменяли username или password
 		} catch (err) {
 			setMessage(err.message)
 			setStatus('error')

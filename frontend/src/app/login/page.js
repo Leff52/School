@@ -5,38 +5,49 @@ import { useState, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthContext } from '../providers'
 import Link from 'next/link'
+import jwt_decode from 'jwt-decode'
 
 export default function LoginPage() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
-    const { setAuth } = useContext(AuthContext)
+    const { auth } = useContext(AuthContext)
     const router = useRouter()
 
     const handleSubmit = async e => {
         e.preventDefault()
+        setError(null)
+        setIsLoading(true)
         try {
-            const res = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
             })
-            const data = await res.json()
+            const data = await response.json()
 
-            if (!res.ok) {
-                setError(data.message || 'Ошибка авторизации')
-                return
+            if (!response.ok) {
+                throw new Error(data.message || 'Ошибка входа в систему')
             }
 
-            // Сохраняем токен в localStorage
-            localStorage.setItem('token', data.token)
-            setAuth({ isAuthenticated: true, token: data.token })
-
-            // Перенаправляем в личный кабинет
-            router.push('/cabinet')
+            if (auth && auth.login) {
+                auth.login(data.token)         
+                const decoded = jwt_decode(data.token);
+                if (decoded.role === 'TEACHER') {
+                    router.push('/teacher');
+                } else {
+                    // ADMIN и ZAVUCH 
+                    router.push('/cabinet');
+                }
+            } else {
+                console.error("Функция auth.login не найдена")
+            }
         } catch (err) {
-            setError('Ошибка связи с сервером')
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -75,7 +86,9 @@ export default function LoginPage() {
                             />
                         </div>
                         
-                        <button type="submit" className="login-button">Войти</button>
+                        <button type="submit" className="login-button" disabled={isLoading}>
+                            {isLoading ? 'Загрузка...' : 'Войти'}
+                        </button>
                     </form>
                 </div>
             </main>
@@ -135,10 +148,9 @@ export default function LoginPage() {
                     border-radius: 4px;
                     font-size: 16px;
                     transition: border 0.3s, box-shadow 0.3s;
-                    color: #222222; /* Добавлен темный цвет для вводимого текста */
+                    color: #222222; 
                 }
                 
-                /* Стили для placeholder */
                 .form-group input::placeholder {
                     color: #555555;
                 }
@@ -177,6 +189,11 @@ export default function LoginPage() {
                 
                 .login-button:hover {
                     background-color: #0051af;
+                }
+                
+                .login-button:disabled {
+                    background-color: #a0c4ff;
+                    cursor: not-allowed;
                 }
                 
                 .additional-links {

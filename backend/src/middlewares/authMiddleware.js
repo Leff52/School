@@ -51,3 +51,10 @@ exports.isUser = (req, res, next) => {
     }
     next()
 }
+exports.isTeacher = (req, res, next) => {
+	if (req.user.role !== 'TEACHER') {
+		return res.status(403).json({ message: 'Только для учителей' })
+	}
+	next()
+}
+  
